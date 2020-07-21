@@ -78,8 +78,8 @@ int main() {
 	//    SHADERS     //
 	////////////////////
 
-	Shader shader("D:\\pepsalt\\Documents\\Developer\\other-dev\\cpp\\VSTUDIO\\PepoGL\\PepoGL\\res\\shaders\\vertex_shader.shader",
-		"D:\\pepsalt\\Documents\\Developer\\other-dev\\cpp\\VSTUDIO\\PepoGL\\PepoGL\\res\\shaders\\fragment_shader.shader");
+	Shader shader("D:/pepsalt/Documents/Developer/other-dev/cpp/VSTUDIO/PepoGL/PepoGL/res/shaders/vertex_shader.glsl",
+		"D:/pepsalt/Documents/Developer/other-dev/cpp/VSTUDIO/PepoGL/PepoGL/res/shaders/fragment_shader.glsl");
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -98,12 +98,12 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // TEMPORARY
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		elapsedTime = glfwGetTime();
 		shader.use();
-		shader.setFloat3("u_Translation", -1.0f, -1.0f, -1.0f);
+		shader.setFloat3("u_Translation", sin(elapsedTime*20)/20, sin(elapsedTime *	20) / 20, cos(elapsedTime * 20) / 20);
 		//glUniform4f(u_Colour, redValue, 0.4f, blueValue, 1.0f);
 
 		glBindVertexArray(vao);

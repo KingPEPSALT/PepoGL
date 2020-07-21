@@ -5,8 +5,10 @@ layout(location = 1) in vec3 aColour;
 uniform vec3 u_Translation;
 
 out vec3 v_Colour;
+out vec3 position;
 
 void main() {
-	gl_Position = vec4(aPos*u_Translation, 1.0);
+	position = aPos + u_Translation/4;
+	gl_Position = vec4(position, 1.0);
 	v_Colour = aColour;
 }
