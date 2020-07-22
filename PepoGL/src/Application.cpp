@@ -1,5 +1,6 @@
 #include <glew.h>
 #include <GLFW/glfw3.h>
+#include "ErrorColour.h"
 
 #include <iostream>
 
@@ -10,11 +11,11 @@
 int main() {
 	
 	//INITIALISATIONS START
-
 	GLFWwindow* window;
 
 	if (!glfwInit()) {
-		std::cerr << "INITIALISATION ERROR: [GLFW DID NOT INITIALISE]." << std::endl;
+		
+		std::cout << CONSOLE_RED << "INITIALISATION ERROR: [GLFW DID NOT INITIALISE]." << std::endl;
 		return -1;
 	}
 	
@@ -30,7 +31,8 @@ int main() {
 	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME, NULL, NULL);
 
 	if (!window) {
-		std::cerr << "INITIALISATION ERROR: [WINDOW DID NOT CREATE]." << std::endl;
+		
+		std::cout << CONSOLE_RED << "INITIALISATION ERROR: [WINDOW DID NOT CREATE]." << std::endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -38,7 +40,7 @@ int main() {
 	glfwMakeContextCurrent(window);
 
 	if (glewInit() != GLEW_OK) {
-		std::cerr << "INITIALISATION ERROR: [GLEW DID NOT INITIALISE]." << std::endl;
+		std::cout << CONSOLE_RED << "INITIALISATION ERROR: [GLEW DID NOT INITIALISE]." << std::endl;
 		return -1;
 	}
 
@@ -46,13 +48,12 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int width, int height){glViewport(0, 0, width, height);});
 
 	//INITIALISATIONS END
-
-	std::cout << "INITIALISATION SUCCESS: [SUCCESFULLY INITIALISED GLEW AND GLFW].\n" << std::endl;
+	std::cout << CONSOLE_GREEN << "INITIALISATION SUCCESS: [SUCCESFULLY INITIALISED GLEW AND GLFW].\n" << std::endl;
 
 	// VERTEX BUFFER
 
 	float vertices[] = {
-		// positions          // colors           // texture coords
+		// positions          // colors           // texture
 		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
 		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
@@ -91,51 +92,85 @@ int main() {
 	glEnableVertexAttribArray(2);
 
 	////////////////////
+	//				  //
 	//    SHADERS     //
-	//   TEXTURES     //
+	//    TEXTURES    //
+	//                //
 	////////////////////
 
 	Shader shader("./res/shaders/vertex_shader.glsl",
 		"./res/shaders/fragment_shader.glsl");
 
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	stbi_set_flip_vertically_on_load(true);
+
+	unsigned int textures[2];
+	glGenTextures(2, textures);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	int width, height, no_chans;
-	const char* texture_path = "./res/textures/molten.jpg";
-	unsigned char* data = stbi_load(texture_path, &width, &height, &no_chans, 0);
+	const char* texture_path = "./res/textures/container.jpg";
+	std::string t_file_name = static_cast<std::string>(texture_path).substr(static_cast<std::string>(texture_path).find_last_of("/\\") + 1);
+	unsigned char* data = stbi_load(texture_path, &width, &height, &no_chans, 3);
 
 	if (data) {
+		std::cout << CONSOLE_GREEN << "TEXTURE LOADING SUCCESS: [LOADED: \"" << t_file_name << "\"]." << std::endl;
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D); 
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		std::cout << "TEXTURE LOADING ERROR: [FAILED TO LOAD TEXTURE].\nPATH:\n" << texture_path << std::endl;
+		std::cout << CONSOLE_RED << "TEXTURE LOADING ERROR: [FAILED TO LOAD:\"" << t_file_name << "\"]." << std::endl;
+	}
+
+	stbi_image_free(data);
+
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
+	texture_path = "./res/textures/awesomeface.png";
+	t_file_name = static_cast<std::string>(texture_path).substr(static_cast<std::string>(texture_path).find_last_of("/\\") + 1);
+	data = stbi_load(texture_path, &width, &height, &no_chans, 4);
+
+	if (data) {
+		std::cout << CONSOLE_GREEN << "TEXTURE LOADING SUCCESS: [LOADED: \"" << t_file_name << "\"]." << std::endl;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		
+		std::cout << CONSOLE_RED << "TEXTURE LOADING ERROR: [FAILED TO LOAD: \"" << t_file_name << "\"]." << std::endl;
 	}
 
 	stbi_image_free(data);
 
 	shader.use();
-	shader.setInt("u_Texture", 0);
+	shader.setInt("u_Texture1", 0);
+	shader.setInt("u_Texture2", 1);
 	shader.setFloat3("aspect_ratio", static_cast<float>(WINDOW_HEIGHT) / static_cast<float>(WINDOW_WIDTH), 1.0f, 1.0f);
 
 	
 	///////////////////
+	//				 //
 	//   RENDERING   //
+	//				 //
 	///////////////////
 
-	std::cout << "OpenGL : [" << WINDOW_NAME << " | " << WINDOW_WIDTH << "x" << WINDOW_HEIGHT << " ] : STARTED.\n[" << glGetString(GL_VERSION) << "]" << std::endl;
+	std::cout << CONSOLE_BLUE << "\nOpenGL STARTED: [ \"" << WINDOW_NAME << "\" | " << WINDOW_WIDTH << "x" << WINDOW_HEIGHT << " ]\nVERSION: [" << glGetString(GL_VERSION) << "]" << std::endl;
 
-	float elapsedTime;
+	//float elapsedTime;
 	//int u_Colour = glGetUniformLocation(shader_program, "u_Colour");
-	
+
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -143,25 +178,24 @@ int main() {
 		//elapsedTime = glfwGetTime();
 		//glUniform4f(u_Colour, redValue, 0.4f, blueValue, 1.0f);
 		
-		//glBindTextureUnit(GL_TEXTURE0, texture);
 
-		//glBindTexture(GL_TEXTURE_2D, texture);
-		//glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textures[1]);
+
 
 		shader.use();
-		shader.setInt("u_Texture", 0);
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(unsigned int), GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
 
-		static GLenum error = glGetError();
-		if (error != GL_NO_ERROR)
-			std::cout << error << "\n" << std::endl;
-			
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
+	std::cout << CONSOLE_RESET << std::endl;
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &ebo);
 	glfwDestroyWindow(window);
 	return 0;
 }
