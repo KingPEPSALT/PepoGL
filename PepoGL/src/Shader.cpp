@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <string_view>
+#include "vendor/glm/gtc/type_ptr.hpp"
 
 
 Shader::Shader(const char* vertex_source_path, const char* fragment_source_path) {
@@ -117,4 +118,7 @@ void Shader::setFloat(const std::string& uniform_name, float value) const {
 }
 void Shader::setFloat3(const std::string& uniform_name, float v1, float v2, float v3) const {
 	glUniform3f(glGetUniformLocation(this->ID, uniform_name.c_str()), v1, v2, v3);
+}
+void Shader::setFloatM4(const std::string& uniform_name, const glm::mat4& matrix, GLenum transpose) const {
+	glUniformMatrix4fv(glGetUniformLocation(this->ID, uniform_name.c_str()), 1, transpose, glm::value_ptr(matrix));
 }
