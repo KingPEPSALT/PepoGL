@@ -1,9 +1,12 @@
 #include "Shader.h"
 #include <fstream>
 #include <sstream>
+#include "ErrorColour.h"
 
 #include <iostream>
 #include <string_view>
+#include "vendor/glm/gtc/type_ptr.hpp"
+
 
 Shader::Shader(const char* vertex_source_path, const char* fragment_source_path) {
 
@@ -29,7 +32,7 @@ Shader::Shader(const char* vertex_source_path, const char* fragment_source_path)
 		fragment_str = fStream.str();	
 	}
 	catch (std::ifstream::failure e) {
-		std::cerr << "FILE READING ERROR: [FAILED TO READ SHADER FILE].\n" << e.what() << std::endl;
+		std::cout << CONSOLE_RED << "FILE READING ERROR: [FAILED TO READ SHADER FILE].\n" << e.what() << std::endl;
 	}
 	const char* vertex_source = vertex_str.c_str();
 	const char* fragment_source = fragment_str.c_str();
@@ -45,12 +48,15 @@ Shader::Shader(const char* vertex_source_path, const char* fragment_source_path)
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_source, NULL);
 	glCompileShader(vertex_shader);
-
+	std::string s_file_name = static_cast<std::string>(vertex_source_path).substr(static_cast<std::string>(vertex_source_path).find_last_of("/\\") + 1);
 	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertex_shader, 512, NULL, infolog);
-		std::cerr << "SHADER COMPILATION ERROR: [FAILED TO COMPILE VERTEX SHADER].\nINFO LOG:\n" << infolog << std::endl;
+		std::cout << CONSOLE_RED << "SHADER COMPILATION ERROR: [FAILED TO COMPILE VERTEX SHADER: \"" << s_file_name << "\" ].\nINFO LOG:\n" << infolog << std::endl;
 		success = 1; memset(infolog, 0, sizeof(infolog));
+	}
+	else {
+		std::cout << CONSOLE_GREEN << "SHADER COMPILATION SUCCESS: [COMPILED VERTEX SHADER: \"" << s_file_name << "\" ]" << std::endl;
 	}
 
 	//FRAGMENT SHADER
@@ -58,12 +64,16 @@ Shader::Shader(const char* vertex_source_path, const char* fragment_source_path)
 	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment_shader, 1, &fragment_source, NULL);
 	glCompileShader(fragment_shader);
-
+	s_file_name = static_cast<std::string>(fragment_source_path).substr(static_cast<std::string>(fragment_source_path).find_last_of("/\\") + 1);
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragment_shader, 512, NULL, infolog);
-		std::cerr << "SHADER COMPILATION ERROR: [FAILED TO COMPILE FRAGMENT SHADER].\nINFO LOG:\n" << infolog << std::endl;
+		std::cout << CONSOLE_RED << "SHADER COMPILATION ERROR: [FAILED TO COMPILE FRAGMENT SHADER: \"" << s_file_name << "\" ].\nINFO LOG : \n" << infolog << std::endl;
 		success = 1; memset(infolog, 0, sizeof(infolog));
+	}
+	else {
+		std::cout << CONSOLE_GREEN << "SHADER COMPILATION SUCCESS: [COMPILED FRAGMENT SHADER: \"" << s_file_name << "\" ]"<< std::endl;
+
 	}
 
 	//PROGRAM
@@ -76,14 +86,20 @@ Shader::Shader(const char* vertex_source_path, const char* fragment_source_path)
 	glGetProgramiv(this->ID, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(this->ID, 512, NULL, infolog);
-		std::cerr << "PROGRAM LINKING ERROR: [FAILED TO LINK PROGRAM].\nINFO LOG:\n" << infolog << std::endl;
+		
+		std::cout << CONSOLE_RED << "PROGRAM LINKING ERROR: [FAILED TO LINK PROGRAM].\nINFO LOG:\n" << infolog << std::endl;
 		success = 1; memset(infolog, 0, sizeof(infolog));
+	}
+	else {
+		std::cout << CONSOLE_GREEN << "PROGRAM LINKING SUCESS: [LINKED SHADER PROGRAM]." << std::endl;
 	}
 
 	//DELETE LINKED SHADERS
 
 	glDeleteShader(vertex_shader);
 	glDeleteShader(fragment_shader);
+
+	std::cout << CONSOLE_BLUE << "SHADER OBJECT INITALISED: [SHADER.CPP CONSTRUCTOR OVER].\n" << std::endl;
 
 }
 
@@ -102,4 +118,7 @@ void Shader::setFloat(const std::string& uniform_name, float value) const {
 }
 void Shader::setFloat3(const std::string& uniform_name, float v1, float v2, float v3) const {
 	glUniform3f(glGetUniformLocation(this->ID, uniform_name.c_str()), v1, v2, v3);
+}
+void Shader::setFloatM4(const std::string& uniform_name, const glm::mat4& matrix, GLenum transpose) const {
+	glUniformMatrix4fv(glGetUniformLocation(this->ID, uniform_name.c_str()), 1, transpose, glm::value_ptr(matrix));
 }
