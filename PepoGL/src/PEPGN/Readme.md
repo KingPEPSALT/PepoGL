@@ -1,4 +1,7 @@
 # PEPGN
 PEPSALT'S OpenGL Engine
 
-To include: #include "PEPGN.h"
+Simple engine that currently allows basic functionality at making graphics.
+
+W.I.P Pre-alpha
+
