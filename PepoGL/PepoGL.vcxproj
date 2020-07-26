@@ -146,24 +146,41 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
-    <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
+    <ClCompile Include="src\PEPGN\Camera.cpp" />
+    <ClCompile Include="src\PEPGN\InputListener.cpp" />
+    <ClCompile Include="src\PEPGN\Pepengine.cpp" />
+    <ClCompile Include="src\PEPGN\Shader.cpp" />
+    <ClCompile Include="src\PEPGN\Texture.cpp" />
+    <ClCompile Include="src\PEPGN\vendor\stb_image\stb_image.cpp" />
+    <ClCompile Include="src\PEPGN\BufferObject.cpp" />
+    <ClCompile Include="src\PEPGN\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ErrorColour.h" />
-    <ClInclude Include="src\Shader.h" />
-    <ClInclude Include="src\vendor\stb_image\stb_image.h" />
+    <ClInclude Include="src\PEPGN\BufferObject.h" />
+    <ClInclude Include="src\PEPGN\Camera.h" />
+    <ClInclude Include="src\PEPGN\ConsoleColour.h" />
+    <ClInclude Include="src\PEPGN\InputListener.h" />
+    <ClInclude Include="src\PEPGN\Pepengine.h" />
+    <ClInclude Include="src\PEPGN\Shader.h" />
+    <ClInclude Include="src\PEPGN\Texture.h" />
+    <ClInclude Include="src\PEPGN\Layout.h" />
+    <ClInclude Include="src\PEPGN\vendor\stb_image\stb_image.h" />
+    <ClInclude Include="src\PEPGN\VertexArray.h" />
+    <ClInclude Include="src\PEPGN\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\fragment_shader.glsl" />
     <None Include="res\shaders\vertex_shader.glsl" />
     <None Include="res\textures\container.jpg" />
+    <None Include="src\PEPGN\Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\awesomeface.png" />
     <Image Include="res\textures\minecraft_grass_side.png" />
     <Image Include="res\textures\molten.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\PEPGN\vendor\Readme.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

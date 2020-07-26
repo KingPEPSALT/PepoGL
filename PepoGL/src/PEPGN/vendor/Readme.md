@@ -1,0 +1,1 @@
+The vendor folder does not contain any code written by or editted by me, whom is under the psuedonym PEPSALT.
