@@ -8,15 +8,15 @@ Whether PepoGL will get completed I am unsure but if it does get completed it wi
 
 And so if development is continued I will see it developed with the previously stated ideology and these goals in mind:
 
-    - Flexibility of control
-        - Easy to use for beginners
-        - Options for experts
-    - Healthy abstraction
-        - Semantic and understandable classes
-        - Does not affect performance
-        - Room for memory management
-    - Usefulness
-        - Will not simply be an OpenGL alias
-        - Will not be a thin wrapper
-        - Will have some innovative/useful functionality
+- Flexibility of control
+    - Easy to use for beginners
+    - Options for experts
+- Healthy abstraction
+    - Semantic and understandable classes
+    - Does not affect performance
+    - Room for memory management
+- Usefulness
+    - Will not simply be an OpenGL alias
+    - Will not be a thin wrapper
+    - Will have some innovative/useful functionality
         
